@@ -265,7 +265,174 @@ The head command extracts the first 5 lines from `animals.txt`. Then, the last 3
 2012-11-06,deer
 2012-11-05,raccoon
 ```
+
 </p>
+</details>
+
+### Pipe Construction
+
+For the file `animals.txt` from the previous exercise, consider the following command:
+
+```
+$ cut -d , -f 2 animals.txt
+```
+
+The `cut` command is used to remove or ‘cut out’ certain sections of each line in the file, and `cut` expects the lines to be separated into columns by a Tab character. A character used in this way is a called a delimiter. In the example above we use the `-d` option to specify the comma as our delimiter character. We have also used the `-f` option to specify that we want to extract the second field (column). This gives the following output:
+
+```
+deer
+rabbit
+raccoon
+rabbit
+deer
+fox
+rabbit
+bear
+```
+
+The `uniq` command filters out adjacent matching lines in a file. How could you extend this pipeline (using `uniq` and another command) to find out what animals the file contains (without any duplicates in their names)?
+
+<details>
+    <summary>
+    **Solution** (click here)
+    </summary>
+
+`$ cut -d , -f 2 animals.txt | sort | uniq`
 
 </details>
+
+### Which Pipe?
+
+The file `animals.txt` contains 8 lines of data formatted as follows:
+
+```
+2012-11-05,deer
+2012-11-05,rabbit
+2012-11-05,raccoon
+2012-11-06,rabbit
+...
+```
+
+The `uniq` command has a `-c` option which gives a count of the number of times a line occurs in its input. Assuming your current directory is `data-shell/data/`, what command would you use to produce a table that shows the total count of each type of animal in the file?
+
+1. `sort animals.txt | uniq -c`
+2. `sort -t, -k2,2 animals.txt | uniq -c`
+3. `cut -d, -f 2 animals.txt | uniq -c`
+4. `cut -d, -f 2 animals.txt | sort | uniq -c`
+5. `cut -d, -f 2 animals.txt | sort | uniq -c | wc -l`
+
+
+<details>
+    <summary>
+    **Solution** (click here)
+    </summary>
+
+Option 4. is the correct answer. If you have difficulty understanding why, try running the commands, or sub-sections of the pipelines (make sure you are in the `data-shell/data` directory).
+
+</details>
+
+## Checking Files
+
+Let's say our analysis has created 17 files in the `north-pacific-gyre/2012-07-03` directory described earlier. As a quick check, starting from the `data-shell` directory, if we type:
+
+```
+$ cd north-pacific-gyre/2012-07-03
+$ wc -l *.txt
+```
+
+The output is 18 lines that look like this:
+
+```
+300 NENE01729A.txt
+300 NENE01729B.txt
+300 NENE01736A.txt
+300 NENE01751A.txt
+300 NENE01751B.txt
+300 NENE01812A.txt
+...
+```
+
+Now if we run
+
+```
+$ wc -l *.txt | sort -n | head -n 5
+ 240 NENE02018B.txt
+ 300 NENE01729A.txt
+ 300 NENE01729B.txt
+ 300 NENE01736A.txt
+ 300 NENE01751A.txt
+```
+
+Whoops: one of the files is 60 lines shorter than the others. When we goes back and checks it, we sees that assay at 8:00 on a Monday morning — someone was probably in using the machine on the weekend, and forgot to reset it. Before re-running that sample, lets checks to see if any files have too much data:
+
+```
+$ wc -l *.txt | sort -n | tail -n 5
+```
+
+```
+ 300 NENE02040B.txt
+ 300 NENE02040Z.txt
+ 300 NENE02043A.txt
+ 300 NENE02043B.txt
+5040 total
+```
+
+Those numbers look good — but what’s that ‘Z’ doing there in the third-to-last line? All of her samples should be marked ‘A’ or ‘B’; by convention, her lab uses ‘Z’ to indicate samples with missing information. To find others like it, she does this:
+
+```
+$ ls *Z.txt
+NENE01971Z.txt    NENE02040Z.txt
+```
+
+It turns outt hat there’s no depth recorded for either of those samples. Since it’s too late to get the information any other way, we must exclude those two files from our analysis. We could delete them using rm, but there are actually some analyses we might do later where depth doesn’t matter, so instead, we'll have to be careful later on to select files using the wildcard expression *[AB].txt. As always, the * matches any number of characters; the expression [AB] matches either an ‘A’ or a ‘B’, so this matches all the valid data files she has.
+
+### Wildcard Expressions
+
+Wildcard expressions can be very complex, but you can sometimes write them in ways that only use simple syntax, at the expense of being a bit more verbose. Consider the directory `data-shell/north-pacific-gyre/2012-07-03` : the wildcard expression *[AB].txt matches all files ending in `A.txt` or `B.txt`. Imagine you forgot about this.
+
+Can you match the same set of files with basic wildcard expressions that do not use the [] syntax? Hint: You may need more than one command, or two arguments to the ls command.
+
+If you used two commands, the files in your output will match the same set of files in this example. What is the small difference between the outputs?
+
+If you used two commands, under what circumstances would your new expression produce an error message where the original one would not?
+
+<details>
+    <summary>
+    **Solution** (click here)
+    </summary>
+
+1:
+
+A solution using two wildcard commands:
+
+`$ ls *A.txt` and then `$ ls *B.txt`
+
+A solution using one command but with two arguments:
+
+`$ ls *A.txt *B.txt`
+
+2: The output from the two new commands is separated because there are two commands.
+3: When there are no files ending in `A.txt`, or there are no files ending in `B.txt`, then one of the two commands will fail.
+</details>
+
+
+## Key Points
+
+- `cat` displays the contents of its inputs.
+- `head` displays the first 10 lines of its input.
+- `tail` displays the last 10 lines of its input.
+- `sort` sorts its inputs.
+- `wc` counts lines, words, and characters in its inputs.
+- `command > [file]` redirects a command’s output to a file (overwriting any existing content).
+- `command >> [file]` appends a command’s output to a file.
+- `[first] | [second]` is a pipeline: the output of the first command is used as the input to the second.
+- The best way to use the shell is to use pipes to combine simple single-purpose programs (filters).
+
+
+
+
+
+
+
+
 
