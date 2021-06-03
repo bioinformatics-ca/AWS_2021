@@ -9,6 +9,10 @@ image: /site_images/CBW_bigdata_icon.jpg
 
 # Module 4: Searching and sorting files
 
+## Preamble
+
+The exercies here are taken from the [Software Carpentry Unix shell lesson](http://swcarpentry.github.io/shell-novice). Licensed under CC-BY 4.0 2018–2021 by [The Carpentries](https://carpentries.org).
+
 ## Setup
 
 The first step will be to download some example data. First move into your home directory, download the example data as a zip file and then unzip the file:
