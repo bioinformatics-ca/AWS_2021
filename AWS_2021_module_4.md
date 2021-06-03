@@ -17,6 +17,7 @@ The first step will be to download some example data. First move into your home 
 cd ~
 wget http://swcarpentry.github.io/shell-novice/data/data-shell.zip
 unzip data-shell.zip
+cd data-shell
 ```
 
 ## Data Exploration
@@ -24,7 +25,16 @@ unzip data-shell.zip
 We'll begin by looking at files are in Protein Data Bank format, a simple text format that specifies the type and position of each atom in the molecule.
 
 ```
-cd ~
-cd data-shell
+$ ls molecules/
+cubane.pdb  ethane.pdb  methane.pdb  octane.pdb  pentane.pdb  propane.pdb
 ```
+
+Let’s go into that directory with `cd` and run an example command `wc cubane.pdb`:
+
+```
+$ cd
+$ wc cubane.pdb
+  20  156 1158 cubane.pdb
+```
+
 
