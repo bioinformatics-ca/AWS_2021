@@ -1,7 +1,7 @@
 ---
 layout: tutorial_page
-permalink: /AWS_2021_module_4
-title: AWS 2021
+permalink: /aws_2021_module_4
+title: AWS 2021 - Part 4
 header1: Workshop Pages for Students
 header2: AWS and Unix Intro - Module 4
 image: /site_images/CBW_bigdata_icon.jpg
