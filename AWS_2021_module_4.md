@@ -1,5 +1,5 @@
 ---
-layout: tutorial_page
+layout: aws_tutorial_page
 permalink: /aws_2021_module_4
 title: AWS 2021 - Part 4
 header1: Workshop Pages for Students
@@ -7,11 +7,11 @@ header2: AWS and Unix Intro - Module 4
 image: /site_images/CBW_bigdata_icon.jpg
 ---
 
-# Module 4: Searching and sorting files
+# Module 4: Searching and sorting files!
 
 ## Preamble
 
-The exercies here are taken from the [Software Carpentry Unix shell lesson](http://swcarpentry.github.io/shell-novice). Licensed under CC-BY 4.0 2018–2021 by [The Carpentries](https://carpentries.org).
+The exercies here are modified versions of the [Software Carpentry Unix shell lesson](http://swcarpentry.github.io/shell-novice). Licensed under CC-BY 4.0 2018–2021 by [The Carpentries](https://carpentries.org).
 
 ## Setup
 
@@ -26,55 +26,63 @@ cd data-shell
 
 ## Data Exploration
 
-We'll begin by looking at files are in Protein Data Bank format, a simple text format that specifies the type and position of each atom in the molecule.
+We'll begin by looking at files are in Genbank gbff. This is a text file that describes the nucleotide sequence and annotation features on those nucleotide sequences. First of all, we run the `ls` command to view the names of the files in the `ecoli_genomes` directory:
+
+```bash
+$ cd data
+$ ls ecoli_genomes
+```
 
 ```
-$ ls molecules/
-cubane.pdb  ethane.pdb  methane.pdb  octane.pdb  pentane.pdb  propane.pdb
+ASM205876v1.gbff ASM294671v1.gbff ASM301851v1.gbff ASM456403v1.gbff ASM522150v1.gbff ASM584v2.gbff    ASM943241v1.gbff
 ```
+{:.output}
 
-Let’s go into that directory with `cd` and run an example command `wc cubane.pdb`:
+
+Let’s go into that directory with `cd` and run an example command `wc ASM584v2.gbff`:
 
 ```
-$ cd
-$ wc cubane.pdb
-  20  156 1158 cubane.pdb
+$ cd ecoli_genomes
+$ wc ASM584v2.gbff
+  191859  685480 11851718 ASM584v2.gbff
 ```
 
 `wc` is the ‘word count’ command: it counts the number of lines, words, and characters in files (from left to right, in that order).
 
-If we run the command `wc *.pdb`, the `*` in `*.pdb` matches zero or more characters, so the shell turns `*.pdb` into a list of all .pdb files in the current directory:
+If we run the command `wc *.gbff`, the `*` in `*.gbff` matches zero or more characters, so the shell turns `*.gbff` into a list of all gbff files in the current directory:
 
 ```bash
-$ wc *.pdb
-  20  156 1158 cubane.pdb
-  12   84  622 ethane.pdb
-   9   57  422 methane.pdb
-  30  246 1828 octane.pdb
-  21  165 1226 pentane.pdb
-  15  111  825 propane.pdb
- 107  819 6081 total
+$ wc *.gbff
+  204528  837084 13332241 ASM205876v1.gbff
+  212462  899913 13993868 ASM294671v1.gbff
+  217040  915629 14251456 ASM301851v1.gbff
+  202036  823021 13167730 ASM456403v1.gbff
+  216788  883045 14082598 ASM522150v1.gbff
+  191859  685480 11851718 ASM584v2.gbff
+  208514  849571 13555200 ASM943241v1.gbff
+ 1453227 5893743 94234811 total
 ```
 
-Note that `wc *.pdb` also shows the total number of all lines in the last line of the output.
+Note that `wc *.gbff` also shows the total number of all lines in the last line of the output.
 
 If we run wc -l instead of just wc, the output shows only the number of lines per file:
 
 ```bash
-$ wc -l *.pdb
-  20 cubane.pdb
-  12 ethane.pdb
-   9 methane.pdb
-  30 octane.pdb
-  21 pentane.pdb
-  15 propane.pdb
- 107 total
+$ wc -l *.gbff
+  204528 ASM205876v1.gbff
+  212462 ASM294671v1.gbff
+  217040 ASM301851v1.gbff
+  202036 ASM456403v1.gbff
+  216788 ASM522150v1.gbff
+  191859 ASM584v2.gbff
+  208514 ASM943241v1.gbff
+ 1453227 total
 ```
 
 Which of these files contains the fewest lines? It’s an easy question to answer when there are only six files, but what if there were 6000? Our first step toward a solution is to run the command:
 
 ```bash
-$ wc -l *.pdb > lengths.txt
+$ wc -l *.gbff > lengths.txt
 ```
 
 The greater than symbol, `>`, tells the shell to redirect the command’s output to a file instead of printing it to the screen. (This is why there is no screen output: everything that wc would have printed has gone into the file `lengths.txt` instead.) The shell will create the file if it doesn’t exist. If the file exists, it will be silently overwritten, which may lead to data loss and thus requires some caution. `ls lengths.txt` confirms that the file exists:
@@ -86,15 +94,17 @@ lengths.txt
 
 We can now send the content of `lengths.txt` to the screen using `cat lengths.txt`. The cat command gets its name from ‘concatenate’ i.e. join together, and it prints the contents of files one after another. There’s only one file in this case, so cat just shows us what it contains:
 
+
 ```bash
 $ cat lengths.txt
-  20 cubane.pdb
-  12 ethane.pdb
-   9 methane.pdb
-  30 octane.pdb
-  21 pentane.pdb
-  15 propane.pdb
- 107 total
+  204528 ASM205876v1.gbff
+  212462 ASM294671v1.gbff
+  217040 ASM301851v1.gbff
+  202036 ASM456403v1.gbff
+  216788 ASM522150v1.gbff
+  191859 ASM584v2.gbff
+  208514 ASM943241v1.gbff
+ 1453227 total
 ```
 
 ## Sorting
