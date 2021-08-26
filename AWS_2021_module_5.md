@@ -83,7 +83,7 @@ $ bash get_tags.sh atlanta.gbff
 or on a different file like this:
 
 ```
-$ bash middle.sh london.pdb
+$ bash middle.sh london.gbff
 ```
 
 ```
@@ -162,7 +162,7 @@ What if we want to process many files in a single pipeline? For example, if we w
 $ grep -c "/locus_tag" *.gbff | sort -t ':' -k2 -n
 ```
 
-because `grep -c` counts the number of occurences of the search string and `sort -n` sorts things numerically. We also tell sort that the output is delimited by a colon `-t ":"` and we want to sort by the second column `-k2`. We could put this in a file, but then it would only ever sort a list of .pdb files in the current directory. If we want to be able to get a sorted list of other kinds of files, we need a way to get all those names into the script. We can’t use `$1`, `$2`, and so on because we don’t know how many files there are. Instead, we use the special variable `$@`, which means, ‘All of the command-line arguments to the shell script’. We also should put `$@` inside double-quotes to handle the case of arguments containing spaces ("`$@`" is special syntax and is equivalent to "`$1`" "`$2`" …).
+because `grep -c` counts the number of occurences of the search string and `sort -n` sorts things numerically. We also tell sort that the output is delimited by a colon `-t ":"` and we want to sort by the second column `-k2`. We could put this in a file, but then it would only ever sort a list of .gbff files in the current directory. If we want to be able to get a sorted list of other kinds of files, we need a way to get all those names into the script. We can’t use `$1`, `$2`, and so on because we don’t know how many files there are. Instead, we use the special variable `$@`, which means, ‘All of the command-line arguments to the shell script’. We also should put `$@` inside double-quotes to handle the case of arguments containing spaces ("`$@`" is special syntax and is equivalent to "`$1`" "`$2`" …).
 
 Here’s an example:
 
