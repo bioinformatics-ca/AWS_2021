@@ -285,7 +285,7 @@ $ wc -l *.gbff | sort -n | head -n 1
 
 The redirection and pipes used in the last few commands are illustrated below:
 
-![redirects_and_pipes](AWS_2021/img/redirects-and-pipes.svg)
+![redirects_and_pipes](img/redirects-and-pipes.svg)
 
 ### Piping Commands Together
 
