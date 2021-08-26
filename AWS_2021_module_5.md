@@ -18,14 +18,14 @@ We are finally ready to see what makes the shell such a powerful programming env
 
 Not only will writing shell scripts make your work faster– you won’t have to retype the same commands over and over again– it will also make it more accurate (fewer chances for typos) and more reproducible. If you come back to your work later (or if someone else finds your work and wants to build on it) you will be able to reproduce the same results simply by running your script, rather than having to remember or retype a long list of commands.
 
-Let’s start by going back to `data/genomes` and creating a new file, `get_tags.sh.sh` which will become our shell script:
+Let’s start by going back to `data/genomes` and creating a new file, `get_tags.sh` which will become our shell script:
 
 ```bash
 $ cd data/genomes
-$ nano get_tags.sh.sh
+$ nano get_tags.sh
 ```
 
-The command nano `get_tags.sh.sh` opens the file `get_tags.sh.sh` within the text editor ‘nano’ (which runs within the shell). If the file does not exist, it will be created. We can use the text editor to directly edit the file – we’ll simply insert the following line:
+The command nano `get_tags.sh` opens the file `get_tags.sh` within the text editor ‘nano’ (which runs within the shell). If the file does not exist, it will be created. We can use the text editor to directly edit the file – we’ll simply insert the following line:
 
 ```bash
 grep "/locus_tag=" atlanta.gbff | head -n 5
@@ -55,7 +55,7 @@ Sure enough, our script’s output is exactly what we would get if we ran that p
 What if we want to select lines from an arbitrary file? We could edit `get_tags.sh` each time to change the filename, but that would probably take longer than typing the command out again in the shell and executing it with a new file name. Instead, let’s edit `get_tags.sh` and make it more versatile:
 
 ```bash
-$ nano get_tags.sh.sh
+$ nano get_tags.sh
 ```
 
 Now, within “nano”, replace the text "atlanta.gbff" with the special variable called $1:
