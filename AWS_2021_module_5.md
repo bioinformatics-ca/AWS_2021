@@ -33,7 +33,7 @@ grep "/locus_tag=" atlanta.gbff | head -n 5
 
 This is a variation on the pipe we constructed earlier: it selects lines 11-15 of the file `atlanta.gbff`. Remember, we are not running it as a command just yet: we are putting the commands in a file.
 
-Then we save the file (Ctrl-O in nano), and exit the text editor (Ctrl-X in nano). Check that the directory molecules now contains a file called `middle.sh`.
+Then we save the file (Ctrl-O in nano), and exit the text editor (Ctrl-X in nano). Check that the directory molecules now contains a file called `get_tags.sh`.
 
 Once we have saved the file, we can ask the shell to execute the commands it contains. Our shell is called bash, so we run the following command:
 
@@ -52,7 +52,7 @@ $ bash get_tags.sh
 
 Sure enough, our script’s output is exactly what we would get if we ran that pipeline directly.
 
-What if we want to select lines from an arbitrary file? We could edit `middle.sh` each time to change the filename, but that would probably take longer than typing the command out again in the shell and executing it with a new file name. Instead, let’s edit `middle.sh` and make it more versatile:
+What if we want to select lines from an arbitrary file? We could edit `get_tags.sh` each time to change the filename, but that would probably take longer than typing the command out again in the shell and executing it with a new file name. Instead, let’s edit `get_tags.sh` and make it more versatile:
 
 ```bash
 $ nano get_tags.sh.sh
@@ -83,7 +83,7 @@ $ bash get_tags.sh atlanta.gbff
 or on a different file like this:
 
 ```
-$ bash middle.sh london.gbff
+$ bash get_tags.sh london.gbff
 ```
 
 ```
@@ -98,7 +98,7 @@ $ bash middle.sh london.gbff
 
 In case the filename happens to contain any spaces, we surround $1 with double-quotes.
 
-Currently, we need to edit `middle.sh` each time we want to adjust the range of lines that is returned. Let’s fix that by configuring our script to instead use three command-line arguments. After the first command-line argument ($1), each additional argument that we provide will be accessible via the special variables `$1`, `$2`, `$3`, which refer to the first, second, third command-line arguments, respectively.
+Currently, we need to edit `get_tags.sh` each time we want to adjust the range of lines that is returned. Let’s fix that by configuring our script to instead use three command-line arguments. After the first command-line argument ($1), each additional argument that we provide will be accessible via the special variables `$1`, `$2`, `$3`, which refer to the first, second, third command-line arguments, respectively.
 
 Knowing this, we can use additional arguments to define the range of lines to be passed to head and tail respectively:
 
