@@ -1,10 +1,11 @@
 ---
 layout: aws_tutorial_page
-permalink: /aws_2021_module_4
+permalink: /AWS_2021/module_4
 title: AWS 2021 - Part 4
 header1: Workshop Pages for Students
 header2: AWS and Unix Intro - Module 4
 image: /site_images/CBW_bigdata_icon.jpg
+home: /AWS_v2_2021.html
 ---
 
 # Module 4: Searching and sorting files!
@@ -19,9 +20,9 @@ The first step will be to download some example data. First move into your home 
 
 ```bash
 cd ~
-wget http://swcarpentry.github.io/shell-novice/data/data-shell.zip
-unzip data-shell.zip
-cd data-shell
+wget http://bioinformaticsdotca.github.io/AWS_2021/data/data.zip
+unzip data.zip
+cd data
 ```
 
 ## Data Exploration
@@ -30,54 +31,66 @@ We'll begin by looking at files are in Genbank gbff. This is a text file that de
 
 ```bash
 $ cd data
-$ ls ecoli_genomes
+$ ls genomes
 ```
 
 ```
-ASM205876v1.gbff ASM294671v1.gbff ASM301851v1.gbff ASM456403v1.gbff ASM522150v1.gbff ASM584v2.gbff    ASM943241v1.gbff
+atlanta.gbff      braunschweig.gbff lab-strain.gbff   london.gbff       muenster.gbff     nevada.gbff       texas.gbff
 ```
 {:.output}
 
 
-Let’s go into that directory with `cd` and run an example command `wc ASM584v2.gbff`:
+Let’s go into that directory with `cd` and run an example command `wc london.gbff`:
+
+```bash
+$ cd genomes
+$ wc london.gbff
+```
 
 ```
-$ cd ecoli_genomes
-$ wc ASM584v2.gbff
-  191859  685480 11851718 ASM584v2.gbff
+212462  899913 13993868 london.gbff
 ```
+{:.output}
 
 `wc` is the ‘word count’ command: it counts the number of lines, words, and characters in files (from left to right, in that order).
 
-If we run the command `wc *.gbff`, the `*` in `*.gbff` matches zero or more characters, so the shell turns `*.gbff` into a list of all gbff files in the current directory:
+If we run the command `wc *.gbff`, the `*` wildcard matches zero or more occurences of any character, so the shell turns `*.gbff` into a list of all gbff files in the current directory:
 
 ```bash
 $ wc *.gbff
-  204528  837084 13332241 ASM205876v1.gbff
-  212462  899913 13993868 ASM294671v1.gbff
-  217040  915629 14251456 ASM301851v1.gbff
-  202036  823021 13167730 ASM456403v1.gbff
-  216788  883045 14082598 ASM522150v1.gbff
-  191859  685480 11851718 ASM584v2.gbff
-  208514  849571 13555200 ASM943241v1.gbff
+```
+
+```
+  217040  915629 14251456 atlanta.gbff
+  204528  837084 13332241 braunschweig.gbff
+  191859  685480 11851718 lab-strain.gbff
+  212462  899913 13993868 london.gbff
+  202036  823021 13167730 muenster.gbff
+  216788  883045 14082598 nevada.gbff
+  208514  849571 13555200 texas.gbff
  1453227 5893743 94234811 total
 ```
+{:.output}
 
 Note that `wc *.gbff` also shows the total number of all lines in the last line of the output.
 
-If we run wc -l instead of just wc, the output shows only the number of lines per file:
+If we run `wc -l` instead of just `wc`, the output shows only the number of lines per file:
 
 ```bash
 $ wc -l *.gbff
-  204528 ASM205876v1.gbff
-  212462 ASM294671v1.gbff
-  217040 ASM301851v1.gbff
-  202036 ASM456403v1.gbff
-  216788 ASM522150v1.gbff
-  191859 ASM584v2.gbff
-  208514 ASM943241v1.gbff
+```
+
+```
+  217040 atlanta.gbff
+  204528 braunschweig.gbff
+  191859 lab-strain.gbff
+  212462 london.gbff
+  202036 muenster.gbff
+  216788 nevada.gbff
+  208514 texas.gbff
  1453227 total
 ```
+{:.output}
 
 Which of these files contains the fewest lines? It’s an easy question to answer when there are only six files, but what if there were 6000? Our first step toward a solution is to run the command:
 
@@ -94,22 +107,29 @@ lengths.txt
 
 We can now send the content of `lengths.txt` to the screen using `cat lengths.txt`. The cat command gets its name from ‘concatenate’ i.e. join together, and it prints the contents of files one after another. There’s only one file in this case, so cat just shows us what it contains:
 
-
 ```bash
 $ cat lengths.txt
-  204528 ASM205876v1.gbff
-  212462 ASM294671v1.gbff
-  217040 ASM301851v1.gbff
-  202036 ASM456403v1.gbff
-  216788 ASM522150v1.gbff
-  191859 ASM584v2.gbff
-  208514 ASM943241v1.gbff
+```
+
+```
+  217040 atlanta.gbff
+  204528 braunschweig.gbff
+  191859 lab-strain.gbff
+  212462 london.gbff
+  202036 muenster.gbff
+  216788 nevada.gbff
+  208514 texas.gbff
  1453227 total
 ```
+{:.output}
 
 ## Sorting
 
-If we run `sort` on a file containing the following lines:
+The `sort` command rearranges the lines in a file in order. There are different methods of sorting - lexigraphically (a-z1-9) or numerically. The default sort type is lexigraphically, where numbers are treated one character at a time. Given a hypothetical file "numbers.txt" that looks like:
+
+```bash
+cat numbers.txt
+```
 
 ```
 10
@@ -118,8 +138,13 @@ If we run `sort` on a file containing the following lines:
 22
 6
 ```
+{:.output}
 
-the output is:
+If we run `sort` on this file:
+
+```bash
+sort numbers.txt
+```
 
 ```
 10
@@ -128,8 +153,14 @@ the output is:
 22
 6
 ```
+{:.output}
 
-If we run `sort -n` on the same input, we get this instead:
+
+If we run `sort -n` on the same input - specifying that we want to sort numerically, we get this instead:
+
+```bash
+sort -n numbers.txt
+```
 
 ```
 2
@@ -138,35 +169,48 @@ If we run `sort -n` on the same input, we get this instead:
 19
 22
 ```
+{:.output}
+
 Explain why `-n` has this effect.
 
 <details>
-    <summary>
+  <summary>
     **Solution** (click here)
-    </summary>
-The -n option specifies a numerical rather than an alphanumerical sort.
+  </summary>
+  The -n option specifies a numerical rather than an alphanumerical sort.
 </details>
 
-We will also use the `-n` option to specify that the sort is numerical instead of alphanumerical. This does not change the file; instead, it sends the sorted result to the screen:
+We will sort our lengths.txt file using the `-n` option to specify that the sort is numerical instead of alphanumerical. Note that running sort does not modify the file; instead, it sends the sorted result to the screen:
 
 ```bash
 $ sort -n lengths.txt
-  9  methane.pdb
- 12  ethane.pdb
- 15  propane.pdb
- 20  cubane.pdb
- 21  pentane.pdb
- 30  octane.pdb
-107  total
 ```
+
+```
+  191859 lab-strain.gbff
+  202036 muenster.gbff
+  204528 braunschweig.gbff
+  208514 texas.gbff
+  212462 london.gbff
+  216788 nevada.gbff
+  217040 atlanta.gbff
+ 1453227 total
+```
+{:.output}
+
 
 We can put the sorted list of lines in another temporary file called `sorted-lengths.txt` by putting `> sorted-lengths.txt` after the command, just as we used `> lengths.txt` to put the output of `wc` into `lengths.txt`. Once we’ve done that, we can run another command called `head` to get the first few lines in sorted-lengths.txt:
 
 ```bash
 $ sort -n lengths.txt > sorted-lengths.txt
 $ head -n 1 sorted-lengths.txt
-  9  methane.pdb
 ```
+
+```
+  191859 lab-strain.gbff
+```
+{:.output}
+
 
 Using `-n 1` with head tells it that we only want the first line of the file; `-n 20` would get the first 20, and so on. Since `sorted-lengths.txt` contains the lengths of our files ordered from least to greatest, the output of head must be the file with the fewest lines.
 
@@ -174,20 +218,24 @@ Using `-n 1` with head tells it that we only want the first line of the file; `-
 
 We have seen the use of `>`, but there is a similar operator `>>` which works slightly differently. We’ll learn about the differences between these two operators by printing some strings. We can use the echo command to print strings e.g.
 
-```
+```bash
 $ echo The echo command prints text
+```
+
+```
 The echo command prints text
 ```
+{:.output}
 
 Now test the commands below to reveal the difference between the two operators:
 
-```
+```bash
 $ echo hello > testfile01.txt
 ```
 
 and:
 
-```
+```bash
 $ echo hello >> testfile01.txt
 ```
 
@@ -195,42 +243,55 @@ $ echo hello >> testfile01.txt
 
 If you think this is confusing, you’re in good company: even once you understand what `wc`, `sort`, and `head` do, all those intermediate files make it hard to follow what’s going on. We can make it easier to understand by running sort and head together:
 
-```
+```bash
 $ sort -n lengths.txt | head -n 1
-  9  methane.pdb
 ```
+
+```
+  191859 lab-strain.gbff
+```
+{:.output}
 
 The vertical bar, `|`, between the two commands is called a pipe. It tells the shell that we want to use the output of the command on the left as the input to the command on the right.
 
 Nothing prevents us from chaining pipes consecutively. That is, we can for example send the output of `wc` directly to sort, and then the resulting output to head. Thus we first use a pipe to send the output of `wc` to `sort`:
 
+```bash
+$ wc -l *.gbff | sort -n
 ```
-$ wc -l *.pdb | sort -n
-   9 methane.pdb
-  12 ethane.pdb
-  15 propane.pdb
-  20 cubane.pdb
-  21 pentane.pdb
-  30 octane.pdb
- 107 total
+
 ```
+  191859 lab-strain.gbff
+  202036 muenster.gbff
+  204528 braunschweig.gbff
+  208514 texas.gbff
+  212462 london.gbff
+  216788 nevada.gbff
+  217040 atlanta.gbff
+ 1453227 total
+```
+{:.output}
 
 And now we send the output of this pipe, through another pipe, to head, so that the full pipeline becomes:
 
+```bash
+$ wc -l *.gbff | sort -n | head -n 1
 ```
-$ wc -l *.pdb | sort -n | head -n 1
-   9  methane.pdb
+
 ```
+  191859 lab-strain.gbff
+```
+{:.output}
 
 The redirection and pipes used in the last few commands are illustrated below:
 
-![redirects_and_pipes](http://swcarpentry.github.io/shell-novice/fig/redirects-and-pipes.svg)
+![redirects_and_pipes](AWS_2021/img/redirects-and-pipes.svg)
 
 ### Piping Commands Together
 
 In our current directory, we want to find the 3 files which have the least number of lines. Which command listed below would work?
 
-```
+```bash
 $ wc -l * > sort -n > head -n 3
 $ wc -l * | sort -n | head -n 1-3
 $ wc -l * | head -n 3 | sort -n
@@ -243,62 +304,65 @@ The key is that any program that reads lines of text from standard input and wri
 
 ### Pipe Reading Comprehension
 
-A file called `animals.txt` (in the `data-shell/data` folder) contains the following data:
+A file called `annotation-dates.txt` (in the `data/collection` folder) contains the annotation dates for our strains in CSV format. Note the file contains some duplicate lines:
 
 ```
-2012-11-05,deer
-2012-11-05,rabbit
-2012-11-05,raccoon
-2012-11-06,rabbit
-2012-11-06,deer
-2012-11-06,fox
-2012-11-07,rabbit
-2012-11-07,bear
+2021-05-23,atlanta
+2021-05-19,branschweig
+2021-05-23,london
+2021-05-23,london
+2021-05-26,muenster
+2021-05-27,nevada
+2021-05-30,texas
+2021-05-30,texas
+2004-06-10,lab-strain
 ```
 
 What text passes through each of the pipes and the final redirect in the pipeline below?
 
-```
-$ cat animals.txt | head -n 5 | tail -n 3 | sort -r > final.txt
+```bash
+$ cd data/collection
+$ cat annotation-dates.txt | head -n 5 | tail -n 3 | sort -r > final.txt
 ```
 
 <details>
-    <summary>
+  <summary>
     **Solution** (click here)
-    </summary>
+  </summary>
 
-<p>
-The head command extracts the first 5 lines from `animals.txt`. Then, the last 3 lines are extracted from the previous 5 by using the tail command. With the `sort -r` command those 3 lines are sorted in reverse order and finally, the output is redirected to a file `final.txt`. The content of this file can be checked by executing `cat final.txt`. The file should contain the following lines:
+  <p>
+  The head command extracts the first 5 lines from <code>annotation-dates.txt</code>. Then, the last 3 lines are extracted from the previous 5 by using the tail command. With the <code>sort -r</code> command those 3 lines are sorted in reverse order and finally, the output is redirected to a file <code>final.txt</code>. The content of this file can be checked by executing <code>cat final.txt</code>. The file should contain the following lines:
 
-```
-2012-11-06,rabbit
-2012-11-06,deer
-2012-11-05,raccoon
-```
-
-</p>
+  <div class="language-plaintext output highlighter-rouge"><pre class="highlight">
+  <code>2021-05-26,muenster
+2021-05-23,london
+2021-05-23,london
+  </code></pre></div>
+  </p>
 </details>
 
 ### Pipe Construction
 
-For the file `animals.txt` from the previous exercise, consider the following command:
+For the file `annotation-dates.txt` from the previous exercise, consider the following command:
 
-```
-$ cut -d , -f 2 animals.txt
+```bash
+$ cut -d , -f 2 annotation-dates.txt
 ```
 
 The `cut` command is used to remove or ‘cut out’ certain sections of each line in the file, and `cut` expects the lines to be separated into columns by a Tab character. A character used in this way is a called a delimiter. In the example above we use the `-d` option to specify the comma as our delimiter character. We have also used the `-f` option to specify that we want to extract the second field (column). This gives the following output:
 
 ```
-deer
-rabbit
-raccoon
-rabbit
-deer
-fox
-rabbit
-bear
+atlanta
+branschweig
+london
+london
+muenster
+nevada
+texas
+texas
+lab-strain
 ```
+{:.output}
 
 The `uniq` command filters out adjacent matching lines in a file. How could you extend this pipeline (using `uniq` and another command) to find out what animals the file contains (without any duplicates in their names)?
 
@@ -307,45 +371,34 @@ The `uniq` command filters out adjacent matching lines in a file. How could you 
     **Solution** (click here)
     </summary>
 
-`$ cut -d , -f 2 animals.txt | sort | uniq`
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cut</span> <span class="nt">-d</span> , <span class="nt">-f</span> 2 annotation-dates.txt | <span class="nb">sort</span> | <span class="nb">uniq</span>
+</code></pre></div></div>
 
 </details>
 
 ### Which Pipe?
 
-The file `animals.txt` contains 8 lines of data formatted as follows:
+The `uniq` command has a `-c` option which gives a count of the number of times a line occurs in its input. Assuming your current directory is `data/collection`, what command would you use to produce a table that shows the total number of times each E. coli strain appears in the file?
 
-```
-2012-11-05,deer
-2012-11-05,rabbit
-2012-11-05,raccoon
-2012-11-06,rabbit
-...
-```
-
-The `uniq` command has a `-c` option which gives a count of the number of times a line occurs in its input. Assuming your current directory is `data-shell/data/`, what command would you use to produce a table that shows the total count of each type of animal in the file?
-
-1. `sort animals.txt | uniq -c`
-2. `sort -t, -k2,2 animals.txt | uniq -c`
-3. `cut -d, -f 2 animals.txt | uniq -c`
-4. `cut -d, -f 2 animals.txt | sort | uniq -c`
-5. `cut -d, -f 2 animals.txt | sort | uniq -c | wc -l`
+1. `sort annotation-dates.txt | uniq -c`
+2. `sort -t, -k2,2 annotation-dates.txt | uniq -c`
+3. `cut -d, -f 2 annotation-dates.txt | uniq -c`
+4. `cut -d, -f 2 annotation-dates.txt | sort | uniq -c`
+5. `cut -d, -f 2 annotation-dates.txt | sort | uniq -c | wc -l`
 
 
 <details>
-    <summary>
-    **Solution** (click here)
-    </summary>
-
-Option 4. is the correct answer. If you have difficulty understanding why, try running the commands, or sub-sections of the pipelines (make sure you are in the `data-shell/data` directory).
-
+  <summary>
+  **Solution** (click here)
+  </summary>
+  Option 4. is the correct answer. If you have difficulty understanding why, try running the commands, or sub-sections of the pipelines (make sure you are in the `data/collections` directory).
 </details>
 
 ## Checking Files
 
-Let's say our analysis has created 17 files in the `north-pacific-gyre/2012-07-03` directory described earlier. As a quick check, starting from the `data-shell` directory, if we type:
+Let's say our collaborator has created 17 files in the `north-pacific-gyre/2012-07-03` directory. As a quick check, starting from the `data` directory, if we type:
 
-```
+```bash
 $ cd north-pacific-gyre/2012-07-03
 $ wc -l *.txt
 ```
@@ -361,21 +414,26 @@ The output is 18 lines that look like this:
 300 NENE01812A.txt
 ...
 ```
+{:.output}
 
 Now if we run
 
-```
+```bash
 $ wc -l *.txt | sort -n | head -n 5
- 240 NENE02018B.txt
- 300 NENE01729A.txt
- 300 NENE01729B.txt
- 300 NENE01736A.txt
- 300 NENE01751A.txt
 ```
+
+```
+  240 NENE02018B.txt
+  300 NENE01729A.txt
+  300 NENE01729B.txt
+  300 NENE01736A.txt
+  300 NENE01751A.txt
+```
+{:.output}
 
 Whoops: one of the files is 60 lines shorter than the others. When we goes back and checks it, we sees that assay at 8:00 on a Monday morning — someone was probably in using the machine on the weekend, and forgot to reset it. Before re-running that sample, lets checks to see if any files have too much data:
 
-```
+```bash
 $ wc -l *.txt | sort -n | tail -n 5
 ```
 
@@ -386,19 +444,24 @@ $ wc -l *.txt | sort -n | tail -n 5
  300 NENE02043B.txt
 5040 total
 ```
+{:.output}
 
-Those numbers look good — but what’s that ‘Z’ doing there in the third-to-last line? All of her samples should be marked ‘A’ or ‘B’; by convention, her lab uses ‘Z’ to indicate samples with missing information. To find others like it, she does this:
+Those numbers look good — but what’s that ‘Z’ doing there in the third-to-last line? All of her samples should be marked ‘A’ or ‘B’; by convention, her lab uses ‘Z’ to indicate samples with missing information. To find others like it, we can:
+
+```bash
+$ ls *Z.txt
+```
 
 ```
-$ ls *Z.txt
 NENE01971Z.txt    NENE02040Z.txt
 ```
+{:.output}
 
 It turns outt hat there’s no depth recorded for either of those samples. Since it’s too late to get the information any other way, we must exclude those two files from our analysis. We could delete them using rm, but there are actually some analyses we might do later where depth doesn’t matter, so instead, we'll have to be careful later on to select files using the wildcard expression *[AB].txt. As always, the * matches any number of characters; the expression [AB] matches either an ‘A’ or a ‘B’, so this matches all the valid data files she has.
 
 ### Wildcard Expressions
 
-Wildcard expressions can be very complex, but you can sometimes write them in ways that only use simple syntax, at the expense of being a bit more verbose. Consider the directory `data-shell/north-pacific-gyre/2012-07-03` : the wildcard expression *[AB].txt matches all files ending in `A.txt` or `B.txt`. Imagine you forgot about this.
+Wildcard expressions can be very complex, but you can sometimes write them in ways that only use simple syntax, at the expense of being a bit more verbose. Consider the directory `data/north-pacific-gyre/2012-07-03` : the wildcard expression *[AB].txt matches all files ending in `A.txt` or `B.txt`. Imagine you forgot about this.
 
 Can you match the same set of files with basic wildcard expressions that do not use the [] syntax? Hint: You may need more than one command, or two arguments to the ls command.
 
@@ -415,11 +478,11 @@ If you used two commands, under what circumstances would your new expression pro
 
 A solution using two wildcard commands:
 
-`$ ls *A.txt` and then `$ ls *B.txt`
+<code>ls *A.txt</code> and then <code>ls *B.txt</code>
 
 A solution using one command but with two arguments:
 
-`$ ls *A.txt *B.txt`
+<code>ls *A.txt *B.txt</code>
 
 2: The output from the two new commands is separated because there are two commands.
 3: When there are no files ending in `A.txt`, or there are no files ending in `B.txt`, then one of the two commands will fail.
