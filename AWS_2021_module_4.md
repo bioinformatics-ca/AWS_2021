@@ -128,6 +128,7 @@ $ cat lengths.txt
 The `sort` command rearranges the lines in a file in order. There are different methods of sorting - lexigraphically (a-z1-9) or numerically. The default sort type is lexigraphically, where numbers are treated one character at a time. Given a hypothetical file "numbers.txt" that looks like:
 
 ```bash
+cd ../sorting
 cat numbers.txt
 ```
 
@@ -183,6 +184,7 @@ Explain why `-n` has this effect.
 We will sort our lengths.txt file using the `-n` option to specify that the sort is numerical instead of alphanumerical. Note that running sort does not modify the file; instead, it sends the sorted result to the screen:
 
 ```bash
+cd ../genomes
 $ sort -n lengths.txt
 ```
 
