@@ -22,37 +22,73 @@ Let’s start by going back to `data/genomes` and creating a new file, `get_tags
 
 ```bash
 $ cd data/genomes
-$ nano get_tags.sh
+$ nano count_tags.sh
 ```
 
 The command nano `get_tags.sh` opens the file `get_tags.sh` within the text editor ‘nano’ (which runs within the shell). If the file does not exist, it will be created. We can use the text editor to directly edit the file – we’ll simply insert the following line:
 
 ```bash
-grep "/locus_tag=" atlanta.gbff | head -n 5
+echo -n "atlanta.gbff: "
+grep "/locus_tag=" atlanta.gbff | wc -l
 ```
-
-This is a variation on the pipe we constructed earlier: it selects lines 11-15 of the file `atlanta.gbff`. Remember, we are not running it as a command just yet: we are putting the commands in a file.
 
 Then we save the file (Ctrl-O in nano), and exit the text editor (Ctrl-X in nano). Check that the directory molecules now contains a file called `get_tags.sh`.
 
 Once we have saved the file, we can ask the shell to execute the commands it contains. Our shell is called bash, so we run the following command:
 
 ```bash
-$ bash get_tags.sh
+$ bash count_tags.sh
 ```
 
 ```
-    /locus_tag="AYP09_RS32715"
-    /locus_tag="AYP09_RS32715"
-    /locus_tag="AYP09_RS32720"
-    /locus_tag="AYP09_RS32720"
-    /locus_tag="AYP09_RS00575"
+atlanta.gbff 12237
 ```
 {:.output}
 
 Sure enough, our script’s output is exactly what we would get if we ran that pipeline directly.
 
-What if we want to select lines from an arbitrary file? We could edit `get_tags.sh` each time to change the filename, but that would probably take longer than typing the command out again in the shell and executing it with a new file name. Instead, let’s edit `get_tags.sh` and make it more versatile:
+I've noticed that each locus tag appears twice in the gbff file, so we're double-counting a lot of tags. Let's modify our script to only count unique tags:
+
+```bash
+$ nano count_tags.sh
+```
+
+```bash
+echo -n "atlanta.gbff: "
+grep "/locus_tag=" atlanta.gbff | sort | uniq | wc -l
+```
+
+Now when we run the script:
+
+```bash
+$ nano count_tags.sh
+```
+
+```
+atlanta.gbff 6109
+```
+{:.output}
+
+
+What if we want to count the number of locus tags in many files? Let's introduce a new concept: loopingOpen up our script again
+
+```bash
+$ nano count_tags.sh
+```
+
+```bash
+for filename in atlanta.gbff london.gbff
+do
+  echo -n "$filename "
+  grep "/locus_tag=" $filename | sort | uniq | wc -l
+done
+```
+
+We feed the loop with two elements: the text "atlanta.gbff" and then with the text "london.gbff".
+The loop executes all of the commands between `do` and `done` for each time the loop iterates, and each time, the variable "$filename" is replaced by either "atlanta.gbff" or "london.gbff"
+
+
+What if we wanted to count the number of tags in other gbff file. At the moment, the filenames are hard-coded into our script. It only counts tags in atlanta.gbff and london.gbff. We can make the script a little bit more flexible by using the variable nams "$1" and "$2"
 
 ```bash
 $ nano get_tags.sh
@@ -61,21 +97,22 @@ $ nano get_tags.sh
 Now, within “nano”, replace the text "atlanta.gbff" with the special variable called $1:
 
 ```bash
-grep "/locus_tag=" $1 | head -n 5
+for filename in $1 $2
+do
+  echo -n "$filename "
+  grep "/locus_tag=" $filename | sort | uniq | wc -l
+done
 ```
 
-Inside a shell script, `$1` means ‘the first filename (or other argument) on the command line’. We can now run our script like this:
+Inside a shell script, `$1` means ‘the first filename (or other argument) on the command line’. Similarly, `$2` is the second argument passed to the script. We can now run our script like this:
 
 ```bash
-$ bash get_tags.sh atlanta.gbff
+$ bash count_tags.sh atlanta.gbff london.gbff
 ```
 
 ```
-    /locus_tag="AYP09_RS32715"
-    /locus_tag="AYP09_RS32715"
-    /locus_tag="AYP09_RS32720"
-    /locus_tag="AYP09_RS32720"
-    /locus_tag="AYP09_RS00575"
+atlanta.gbff 6109
+london.gbff 5831
 ```
 {:.output}
 
@@ -83,115 +120,73 @@ $ bash get_tags.sh atlanta.gbff
 or on a different file like this:
 
 ```
-$ bash get_tags.sh london.gbff
+$ bash count_tags.sh nevada.gbff texas.gbff
 ```
 
 ```
-    /locus_tag="C4R22_RS00005"
-    /locus_tag="C4R22_RS00005"
-    /locus_tag="C4R22_RS00010"
-    /locus_tag="C4R22_RS00010"
-    /locus_tag="C4R22_RS00015"
+nevada.gbff 5691
+texas.gbff 5424
 ```
 {:.output}
 
 
 In case the filename happens to contain any spaces, we surround $1 with double-quotes.
 
-Currently, we need to edit `get_tags.sh` each time we want to adjust the range of lines that is returned. Let’s fix that by configuring our script to instead use three command-line arguments. After the first command-line argument ($1), each additional argument that we provide will be accessible via the special variables `$1`, `$2`, `$3`, which refer to the first, second, third command-line arguments, respectively.
+This is better, but our script still isn't quite as flexible as I'd like. It can only operate on two files at a time. What if I wanted to count the tags in three or four files at a time?
 
-Knowing this, we can use additional arguments to define the range of lines to be passed to head and tail respectively:
+There is a special variable "$@" which holds all of the arguments passed to the script. Let's make another modification to our script:
 
-```bash
-$ nano get_tags.sh
-```
-
-Edit the file so that it now contains the lines:
-
-```bash
-head -n "$2" "$1" | tail -n "$3"
-```
-
-We can now run:
-
-```bash
-$ bash get_tags.sh atlanta.gbff 15 5
-```
-
-```
-    /locus_tag="AYP09_RS00590"
-    /locus_tag="AYP09_RS00590"
-    /locus_tag="AYP09_RS00600"
-    /locus_tag="AYP09_RS00600"
-    /locus_tag="AYP09_RS00605"
-```
-{:.output}
-
-By changing the arguments to our command we can change our script’s behaviour:
-
-```bash
-$ bash get_tags.sh atlanta.gbff 20 5
-```
-
-```
-    /locus_tag="AYP09_RS00605"
-    /locus_tag="AYP09_RS00610"
-    /locus_tag="AYP09_RS00610"
-    /locus_tag="AYP09_RS00615"
-    /locus_tag="AYP09_RS00615"
-```
-{:.output}
-
-This works, but it may take the next person who reads `get_tags.sh` a moment to figure out what it does. We can improve our script by adding some comments at the top:
 
 ```bash
 $ nano get_tags.sh
 ```
 
 ```bash
-# Extract locus tags from gbff file.
-# Usage: bash get_tags.sh filename end_line num_lines
-grep "/locus_tag=" "$1" | head -n "$2" | tail -n "$3"
+for filename in $@
+do
+  echo -n "$filename "
+  grep "/locus_tag=" $filename | sort | uniq | wc -l
+done
+```
+
+The "$@" variable gets replaced with all of the arguments passed to our script. This allows us to run:
+
+```bash
+$ bash count_tags.sh *.gbff
+```
+
+```
+atlanta.gbff 6109
+braunschweig.gbff 5248
+lab-strain.gbff 4609
+london.gbff 5831
+muenster.gbff 5176
+nevada.gbff 5691
+texas.gbff 5424
+```
+{:.output}
+
+
+This works, but it may take the next person who reads `count_tags.sh` a moment to figure out what it does. We can improve our script by adding some comments at the top:
+
+```bash
+$ nano count_tags.sh
+```
+
+```bash
+# Counts the number of unique locus tags in one or more gbff files.
+
+for filename in $@
+do
+  echo -n "$filename "
+  grep "/locus_tag=" $filename | sort | uniq | wc -l
+done
 ```
 
 A comment starts with a `#` character and runs to the end of the line. The computer ignores comments, but they’re invaluable for helping people (including your future self) understand and use scripts. The only caveat is that each time you modify the script, you should check that the comment is still accurate: an explanation that sends the reader in the wrong direction is worse than none at all.
 
-What if we want to process many files in a single pipeline? For example, if we want to sort our .gbff files by the number of locus tag annotations they contain? We might type
 
-```bash
-$ grep -c "/locus_tag" *.gbff | sort -t ':' -k2 -n
-```
-
-because `grep -c` counts the number of occurences of the search string and `sort -n` sorts things numerically. We also tell sort that the output is delimited by a colon `-t ":"` and we want to sort by the second column `-k2`. We could put this in a file, but then it would only ever sort a list of .gbff files in the current directory. If we want to be able to get a sorted list of other kinds of files, we need a way to get all those names into the script. We can’t use `$1`, `$2`, and so on because we don’t know how many files there are. Instead, we use the special variable `$@`, which means, ‘All of the command-line arguments to the shell script’. We also should put `$@` inside double-quotes to handle the case of arguments containing spaces ("`$@`" is special syntax and is equivalent to "`$1`" "`$2`" …).
-
-Here’s an example:
-
-```bash
-$ nano sorted.sh
-```
-
-```bash
-# Sort files by the number of locus tags.
-# Usage: bash sorted.sh one_or_more_filenames
-grep -c "/locus_tag" "$@" | sort -t ':' -k2 -n
-```
-
-Now we can run
-
-```bash
-$ bash sorted.sh *.gbff
-```
-
-```
-lab-strain.gbff:9135
-muenster.gbff:10353
-braunschweig.gbff:10498
-texas.gbff:10864
-nevada.gbff:11400
-london.gbff:11671
-atlanta.gbff:12237
-```
-{:.output}
+Exercise: Can you create a command that uses our count_tags.sh script to find the gbff file with the smallest number of locus tags?
 
 ## Key Points
 
