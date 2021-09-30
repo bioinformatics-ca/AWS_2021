@@ -119,7 +119,7 @@ london.gbff 5831
 
 or on a different file like this:
 
-```
+```bash
 $ bash count_tags.sh nevada.gbff texas.gbff
 ```
 
@@ -185,6 +185,24 @@ done
 
 A comment starts with a `#` character and runs to the end of the line. The computer ignores comments, but they’re invaluable for helping people (including your future self) understand and use scripts. The only caveat is that each time you modify the script, you should check that the comment is still accurate: an explanation that sends the reader in the wrong direction is worse than none at all.
 
+Lastly, let's make our script executable. First we'll modify the file permissions. This can be done using the `chmod` command:
+
+```bash
+chmod +x count_tags.sh
+```
+
+We'll also add a "shebang" line to our script which tells the shell what program should be used to run our script. Modify our script to include this first line:
+
+```bash
+#!/bin/bash
+# Counts the number of unique locus tags in one or more gbff files.
+
+for filename in $@
+do
+  echo -n "$filename "
+  grep "/locus_tag=" $filename | sort | uniq | wc -l
+done
+```
 
 Exercise: Can you create a command that uses our count_tags.sh script to find the gbff file with the smallest number of locus tags?
 
