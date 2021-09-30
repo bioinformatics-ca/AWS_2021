@@ -206,6 +206,122 @@ done
 
 Exercise: Can you create a command that uses our count_tags.sh script to find the gbff file with the smallest number of locus tags?
 
+## Awk
+
+Another very helpful "Swiss Army knife" of the shell is the program `awk`. Awk that, like `grep`, allows you to search for lines in a file matching some condition, but `awk` /also/ allows you to perform some small operations on those lines once you have matched them.
+
+Let's build an simple example piece by piece.
+
+Open up a new file:
+
+```bash
+nano find_lengths.awk
+```
+
+In this awk script, let's just write:
+
+```awk
+/LOCUS/
+```
+
+This is instructing awk to find all files that match the string "LOCUS". We can find all the lines matching "LOCUS" in the atlanta.gbff file by running:
+
+```bash
+awk -f find_lengths.awk atlanta.gbff
+```
+
+```
+LOCUS       NZ_CP027572          5858866 bp    DNA     circular CON 24-MAY-2021
+LOCUS       NZ_CP027571            97037 bp    DNA     circular CON 24-MAY-2021
+```
+{:.output}
+
+
+Notice that the third column in the "LOCUS" lines includes the length of the sequence. Let's pull that out. Modify the contents of `find_lengths.awk` to include a block (executed each time awk finds a matching line)
+
+
+In an awk script, we can use $3 to refer to the text in the third column (space-separated). Note that this is different to the dollar-sign variables in bash. Here we are writing in a script in the awk language, and not the bash language.
+
+```awk
+/LOCUS/ {
+    print "Found a locus with length " $3 " bp"
+}
+```
+
+Running the script now gives:
+
+```bash
+awk -f find_lengths.awk atlanta.gbff
+```
+
+```
+Found a locus with length 5858866 bp
+Found a locus with length 97037 bp
+```
+{:.output}
+
+It might be helpful to sum up those lengths. We can create a variable called 'total' and add the numbers found in the third column. Open up the awk script and modify the contents to read
+
+```awk
+/LOCUS/ {
+    print "Found a locus with length " $3 " bp"
+    sum += $3
+}
+
+END {
+    print "Total: " sum " bp"
+}
+```
+
+We've written a new block here. Our first block uses the `/LOCUS/` matcher so it is run every time awk finds a line that matches "LOCUS". The `END` block is a special block that is run only once - when awk reaches the end of the input file. There is a similar optional `BEGIN` block run once at the beginning, but we have no use for that in our example.
+
+Running the script now gives:
+
+```bash
+awk -f find_lengths.awk atlanta.gbff
+```
+
+```
+Found a locus with length 5858866 bp
+Found a locus with length 97037 bp
+Total: 5955903 bp
+```
+{:.output}
+
+I think that this script is a little bit too long and verbose. Let's clean it up a little to read simply:
+
+
+```awk
+/LOCUS/ {sum += $3}
+END {print sum}
+```
+
+This gives us just the total length for a file:
+
+```bash
+awk -f find_lengths.awk atlanta.gbff
+```
+
+```
+5955903
+```
+{:.output}
+
+
+It is actually not even necessary to write our awk command in a separte file. Our script is short enough that we might even just want to write it in-line inside a command:
+
+```bash
+awk '/LOCUS/{sum += $3} END{print sum}' atlanta.gbff
+```
+
+```
+5955903
+```
+{:.output}
+
+Exercise: Can you write a command or a bash script to find the genome with the smallest total size?
+
+
 ## Key Points
 
 1. Save commands in files (usually called shell scripts) for re-use.
